@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Swagger explorer</title>
+    <title>Senodio explorer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="//use.typekit.net/iws6ohy.js"></script>
     <style type="text/css">
@@ -22,7 +22,6 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <!--style type="text/css"></style-->
 
-    <link href="css/index.css" rel="stylesheet"/>
     <link href='css/standalone.css' rel='stylesheet'/>
     <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -54,8 +53,8 @@
             if (url && url.length > 1) {
                 url = decodeURIComponent(url[1]);
             } else {
-                //url = "http://ecs.bobbytech.dk/api/swagger.json";
-                url = "http://petstore.swagger.io/v2/swagger.json";
+                url = "http://ecs.bobbytech.dk/api-docs/swagger.json";
+                //url = "http://petstore.swagger.io/v2/swagger.json";
                 //url = "http://api.wordnik.com/v4/resources.json";
             }
 
@@ -95,12 +94,19 @@
             });
 
             function addApiKeyAuthorization() {
-                var key = encodeURIComponent($('#input_apiKey')[0].value);
+                var key = JSON.parse(window.localStorage.getItem("token"));
+                console.log('init token', key);
                 if (key && key.trim() != "") {
                     var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("Authorization", "Bearer " + key, "header");
                     window.swaggerUi.api.clientAuthorizations.add("key", apiKeyAuth);
-                    log("added key " + key);
+                    log("added key : " + key);
+                    $('.signin-button').html('open dashboard');
+                    log("added key : " + key);
+                } else {
+                    $('.signin-button').html('login');
                 }
+
+                $('#input_apiKey').val(key);
             }
 
             $('#input_apiKey').change(addApiKeyAuthorization);
@@ -186,6 +192,19 @@
             })
         });
     </script>
+
+    <script type="text/javascript">
+        $(window).bind('storage', function (e) {
+            if (e.originalEvent.key && e.originalEvent.key == 'token' && e.originalEvent.newValue) {
+                console.log('got token : ', e.originalEvent.newValue)
+                $('.signin-button').html('open dashboard');
+            }
+            if (e.originalEvent.key && e.originalEvent.key == 'token' && !e.originalEvent.newValue) {
+                console.log('reset token : ', e.originalEvent.newValue)
+                $('.signin-button').html('login');
+            }
+        });
+    </script>
 </head>
 
 <body data-swiftype-index="false" class="page-docs" style="zoom: 1;" cz-shortcut-listen="true">
@@ -195,13 +214,34 @@
             <div class="navbar-header">
                 <button type="button" data-toggle="collapse" data-target="#navbar-collapse" class="navbar-toggle"><span
                         class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span
-                        class="icon-bar"></span><span class="icon-bar"></span></button>
-                <h1 class="navbar-brand"><a href="http://swagger.io"><span>swagger explorer</span></a></h1>
+                        class="icon-bar"></span><span
+                        class="icon-bar"></span></button>
+                <h1 class="navbar-brand"><a href="/"><span>Senodio</span></a></h1>
+                <a href="http://ecs.bobbytech.dk/" class="hiring animated bounce hidden-sm hidden-xs hidden-md">Try it now!</a>
             </div>
             <div id="navbar-collapse" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-left">
-                    <li class="li-why"><a href="http://swagger.io" style="font-size: 25px; padding-left: 0px">Swagger explorer</a></li>
-
+                    <li class="li-why"><a href="https://auth0.com/why-senodio">Why Senodio</a></li>
+                    <li class="li-how"><a href="https://auth0.com/how-it-works">How It Works</a></li>
+                    <li class="li-pricing"><a href="https://auth0.com/pricing">Pricing</a></li>
+                    <li class="dropdown">
+                        <span role="button" data-toggle="dropdown" class="btn-dro">
+                            More
+                            <i class="icon-budicon-460"></i>
+                        </span>
+                        <ul role="menu" aria-labelledby="dLabel" class="dropdown-menu">
+                            <li><a href="https://auth0.com/about">About</a></li>
+                            <li><a href="https://auth0.com/blog">Blog</a></li>
+                            <li><a href="https://auth0.com/customers">Customers</a></li>
+                            <li><a href="https://auth0.com/opensource">Open Source</a></li>
+                            <li><a href="https://auth0.com/jobs">Jobs</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="li-docs"><a href="https://auth0.com/support">Help &amp; Support</a></li>
+                    <li class="li-docs"><a href="http://ecs.bobbytech.dk/api-docs">Documentation</a></li>
+                    <li><a href="http://ecs.bobbytech.dk/" class="signin-button login">Open Dashboard</a></li>
                 </ul>
             </div>
         </div>
@@ -219,6 +259,7 @@
     </div>
     <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"-->
     <link href='css/api-explorer.css' rel='stylesheet' type='text/css'/>
+    <link href="css/index.css" rel="stylesheet"/>
 </section>
 </body>
 </html>
